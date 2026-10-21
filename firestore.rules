@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Each signed-in user can read and write only their own CV document: cvs/{their uid}.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /cvs/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+                            && request.auth.uid == uid
+                            && request.resource.data.keys().hasOnly(['state', 'email', 'updatedAt']);
+    }
+  }
+}

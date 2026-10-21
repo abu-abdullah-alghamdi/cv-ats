@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>منشئ السيرة ATS</title>
+<meta name="description" content="أنشئ سيرة ذاتية احترافية متوافقة مع أنظمة ATS، أو ارفع سيرتك القديمة ونحللها لك، وحمّلها PDF أو Word.">
+<meta name="theme-color" content="#1F5FA8">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+
+<div class="app">
+  <div class="account" id="account" hidden>
+    <span class="acc-who"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><bdi id="acc-email" dir="ltr"></bdi><span class="acc-note" id="acc-note" hidden></span></span>
+    <span class="acc-sync" id="acc-sync" role="status"></span>
+    <button type="button" class="linkbtn" id="acc-signout" data-act="signout">تسجيل خروج</button>
+  </div>
+  <header class="hero">
+    <div class="hero-copy">
+      <span class="brand"><i aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M10 13h6M10 17h6"/></svg></i>منشئ السيرة ATS</span>
+      <h1>سيرة ذاتية احترافية تعدّي أنظمة الفرز وتوصل لمسؤول التوظيف</h1>
+      <p class="hero-lead">أغلب الشركات تفرز السير بأنظمة <b>ATS</b> قبل ما يقراها أحد. عبّي بياناتك أو ارفع سيرتك القديمة، ونرتّبها لك بتنسيق نظيف تقرأه هذي الأنظمة، وحمّلها <b>PDF</b> أو <b>Word</b>.</p>
+      <ul class="pills" aria-label="المزايا">
+        <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>متوافقة مع ATS</li>
+        <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>تحليل يقول لك وش ناقص</li>
+        <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>إيميل وجوال ولنكدإن تنفتح بضغطة</li>
+      </ul>
+      <div class="cta">
+        <button type="button" class="see" data-act="sample">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          شوف سيرتك كيف راح تكون
+        </button>
+      </div>
+    </div>
+    <button type="button" class="hero-visual" data-act="sample" aria-label="شوف مثال لسيرة جاهزة">
+      <div class="sheet back" aria-hidden="true"></div>
+      <div class="sheet front" id="hero-sheet" aria-hidden="true"></div>
+      <span>مثال جاهز</span>
+    </button>
+  </header>
+
+  <section class="auth" id="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <div id="auth-form" hidden>
+        <span class="step-num">قبل ما تبدأ</span>
+        <h2 id="auth-title">ادخل بإيميلك</h2>
+        <p>بدون كلمة مرور. نرسل لك رابط دخول على إيميلك، وتنحفظ سيرتك في حسابك عشان تعدّلها أي وقت ومن أي جهاز.</p>
+        <form id="auth-form-el" novalidate>
+          <label for="auth-email">الإيميل</label>
+          <div class="auth-row">
+            <input id="auth-email" type="email" class="ltr" dir="ltr" placeholder="example@gmail.com" autocomplete="email" inputmode="email" required>
+            <button type="submit" class="go" id="auth-send">أرسل رابط الدخول</button>
+          </div>
+          <p class="auth-msg" id="auth-msg" role="status"></p>
+        </form>
+      </div>
+      <div id="auth-sent" hidden>
+        <span class="step-num">خطوة واحدة باقية</span>
+        <h2>افتح إيميلك</h2>
+        <p>أرسلنا رابط الدخول إلى <b><bdi id="auth-sent-to" dir="ltr"></bdi></b>. اضغط الرابط من نفس الجهاز ويفتح لك حسابك. لو ما وصلك خلال دقيقة، شيّك على البريد غير المرغوب فيه (Spam).</p>
+        <div class="tools"><button type="button" class="btn" data-act="auth-resend">إعادة الإرسال</button><button type="button" class="btn" data-act="auth-change">تغيير الإيميل</button></div>
+        <p class="auth-msg" id="auth-sent-msg" role="status"></p>
+      </div>
+      <div id="auth-confirm" hidden>
+        <span class="step-num">تأكيد</span>
+        <h2>أكّد إيميلك</h2>
+        <p>فتحت رابط الدخول من جهاز أو متصفح ثاني. اكتب نفس الإيميل اللي طلبت عليه الرابط.</p>
+        <form id="auth-confirm-form" novalidate>
+          <div class="auth-row">
+            <input id="auth-confirm-email" type="email" class="ltr" dir="ltr" placeholder="example@gmail.com" autocomplete="email" inputmode="email" aria-label="الإيميل" required>
+            <button type="submit" class="go">دخول</button>
+          </div>
+          <p class="auth-msg" id="auth-confirm-msg" role="status"></p>
+        </form>
+      </div>
+      <div id="auth-busy" class="auth-busy">
+        <span class="spinner" aria-hidden="true"></span><span id="auth-busy-text">نجهّز الصفحة…</span>
+      </div>
+    </div>
+  </section>
+
+  <div id="app-main" hidden>
+  <nav class="stepper" id="stepper" aria-label="خطوات إنشاء السيرة">
+    <button type="button" class="st" data-act="step" data-step="1"><b>1</b><span>ارفع سيرتك</span></button>
+    <i aria-hidden="true"></i>
+    <button type="button" class="st" data-act="step" data-step="2"><b>2</b><span>التحليل</span></button>
+    <i aria-hidden="true"></i>
+    <button type="button" class="st" data-act="step" data-step="3"><b>3</b><span>التعديل والمعاينة</span></button>
+  </nav>
+
+  <section class="step" id="step-1" aria-labelledby="st1-title">
+    <div class="step-head">
+      <span class="step-num">الخطوة 1 من 3</span>
+      <h2 id="st1-title">ارفع سيرتك الذاتية الحالية</h2>
+      <p>نقرأ سيرتك ونعبّي كل الخانات عنك، وبعدها نحللها ونقول لك وش ناقص.</p>
+    </div>
+    <div class="import" id="import">
+        <div id="imp-idle" class="imp-idle">
+          <div class="imp-row">
+            <div class="imp-text"><strong>اختر ملف سيرتك</strong><span>أو اسحب الملف وأفلته هنا.</span></div>
+            <span class="btn filebtn imp-btn">رفع السيرة القديمة<input type="file" id="import-cv" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-label="رفع السيرة القديمة"></span>
+          </div>
+          <p class="imp-small">ملف PDF أو Word (.docx)، حجمه أقل من 10 ميجا.</p>
+          <p class="imp-error" id="imp-error" hidden></p>
+        </div>
+        <div id="imp-progress" class="imp-prog" hidden>
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 56 56"><circle class="track" cx="28" cy="28" r="24" fill="none" stroke-width="5"/><circle id="imp-arc" cx="28" cy="28" r="24" fill="none" stroke-width="5"/></svg>
+            <span id="imp-pct">0%</span>
+          </div>
+          <span id="imp-step" role="status">نقرأ الملف…</span>
+        </div>
+        <div id="imp-confirm" class="imp-row" hidden>
+          <div class="imp-text"><strong>بياناتك جاهزة</strong><span>عندك بيانات مكتوبة. السيرة المرفوعة بتستبدلها.</span></div>
+          <div class="tools"><button type="button" class="btn imp-btn" data-imp="replace">استبدال ببيانات الملف</button><button type="button" class="btn" data-imp="cancel">إلغاء</button></div>
+        </div>
+        <div id="imp-result" hidden>
+          <div class="imp-ok">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+            <p id="imp-result-text"></p>
+          </div>
+          <div class="tools" style="margin-top:10px"><button type="button" class="btn imp-btn" data-act="step" data-step="2">شوف التحليل</button><button type="button" class="btn" data-imp="again">رفع ملف ثاني</button></div>
+        </div>
+      </div>
+    <p class="skip">ما عندك سيرة؟ <button type="button" class="linkbtn" data-act="step" data-step="3" data-focus="f-name">ابدأ من الصفر</button></p>
+  </section>
+
+  <section class="step" id="step-2" aria-labelledby="st2-title" hidden>
+    <div class="step-head">
+      <span class="step-num">الخطوة 2 من 3</span>
+      <h2 id="st2-title">تحليل سيرتك</h2>
+      <p>قارنّا سيرتك بالسيرة النموذجية. اضغط «عدّلها» ونوديك للخانة على طول.</p>
+    </div>
+    <div class="analysis" id="analysis">
+      <p class="an-empty" id="an-empty" hidden>ما فيه بيانات نحللها للحين. ارفع سيرتك في الخطوة 1 أو ابدأ تعبئة البيانات.</p>
+      <div class="an-off" id="an-off" hidden><p>تجاهلت التحليل، فما نعرض الملاحظات.</p><button type="button" class="btn" data-act="an-show">إظهار التحليل</button></div>
+      <div id="an-main">
+        <div class="an-head">
+          <span class="an-title"><strong>جاهزية سيرتك</strong><small id="an-sub"></small></span>
+          <span class="an-side"><span class="an-score" id="an-score">0%</span><button type="button" class="an-hide" data-act="an-hide">تجاهل التحليل</button></span>
+        </div>
+        <div class="an-body">
+          <div class="an-bar" aria-hidden="true"><i id="an-bar"></i></div>
+          <ul class="an-list" id="an-list"></ul>
+          <button type="button" class="btn" data-act="sample">قارن مع السيرة النموذجية</button>
+        </div>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button type="button" class="go" data-act="step" data-step="3">التعديل ومعاينة السيرة</button>
+      <button type="button" class="btn" data-act="step" data-step="1">رفع سيرة ثانية</button>
+    </div>
+  </section>
+
+  <section class="step" id="step-3" aria-labelledby="st3-title" hidden>
+    <div class="step-head step-head-row">
+      <div>
+        <span class="step-num">الخطوة 3 من 3</span>
+        <h2 id="st3-title">عدّل سيرتك وشوفها</h2>
+        <p>أضف أو عدّل أي خانة، والمعاينة تتحدث على طول. لما تخلص، حمّل سيرتك من آخر الصفحة.</p>
+      </div>
+      <button type="button" class="score-chip" id="score-chip" data-act="step" data-step="2" hidden>جاهزية السيرة <b id="chip-score"></b><span id="chip-sub"></span></button>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-act="view" data-view="edit" aria-selected="true">البيانات</button>
+      <button type="button" role="tab" data-act="view" data-view="preview" aria-selected="false">المعاينة</button>
+    </div>
+
+    <div class="grid">
+      <div id="col-edit">
+        <section id="editor" aria-label="البيانات"></section>
+        <div class="dl-card" id="dl-card">
+          <div class="dl-text"><strong>حمّل سيرتك</strong><span>اختر الصيغة اللي تبيها. الملفين متوافقين مع أنظمة ATS.</span></div>
+          <div class="dl-btns">
+          <button class="dl" id="dl-pdf" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+      تحميل PDF
+    </button>
+          <button class="dl alt" id="dl-word" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+      تحميل Word
+    </button>
+          </div>
+          <span id="status" role="status"></span>
+        </div>
+        <p class="an-restore"><button type="button" class="an-hide" data-act="an-show" id="an-show" hidden>إظهار تحليل السيرة</button></p>
+      </div>
+      <section id="preview" aria-label="المعاينة">
+        <div class="pv-head">
+          <h2>المعاينة<span id="pcount"></span></h2>
+          <div class="zoom" aria-label="التكبير">
+            <button type="button" class="btn icon" data-act="zoom" data-d="-1" aria-label="تصغير">−</button>
+            <output id="zv">100%</output>
+            <button type="button" class="btn icon" data-act="zoom" data-d="1" aria-label="تكبير">+</button>
+          </div>
+        </div>
+        <div class="viewer" id="viewer"><div class="pages" id="pages"></div></div>
+      </section>
+    </div>
+  </section>
+  </div>
+</div>
+
+<div class="sample" id="sample" role="dialog" aria-modal="true" aria-labelledby="sample-title" hidden>
+  <div class="sample-card">
+    <div class="sample-head">
+      <div><h2 id="sample-title">مثال لسيرة جاهزة</h2><p>كذا بتطلع سيرتك بعد ما تعبّي بياناتك.</p></div>
+      <button type="button" class="btn" id="sample-close" data-act="sample-close">إغلاق</button>
+    </div>
+    <div class="viewer sample-viewer"><div class="pages" id="sample-pages"></div></div>
+  </div>
+</div>
+
+<div class="sample" id="an-confirm" role="alertdialog" aria-modal="true" aria-labelledby="an-confirm-title" aria-describedby="an-confirm-text" hidden>
+  <div class="confirm-card">
+    <h2 id="an-confirm-title">تجاهل تحليل السيرة؟</h2>
+    <p id="an-confirm-text">ما راح تظهر لك ملاحظات التحليل ولا نسبة الجاهزية مرة ثانية. تقدر ترجّعها من رابط «إظهار تحليل السيرة» تحت آخر الخانات.</p>
+    <div class="tools">
+      <button type="button" class="btn danger-solid" id="an-confirm-yes" data-act="an-hide-yes">نعم، تجاهل التحليل</button>
+      <button type="button" class="btn" data-act="an-hide-no">رجوع</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/cities.js"></script>
+<script src="assets/sample.js"></script>
+<script src="assets/app.js"></script>
+<script type="module" src="assets/cloud.js"></script>
+</body>
+</html>

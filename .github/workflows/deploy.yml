@@ -1,0 +1,31 @@
+name: Deploy to Firebase Hosting
+
+# Every push to main publishes the site. Needs two settings in the GitHub repo:
+#   Secret   FIREBASE_SERVICE_ACCOUNT  (the service account JSON from Firebase)
+#   Variable FIREBASE_PROJECT_ID       (your Firebase project id)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HAS_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+    steps:
+      - name: Skip until Firebase is connected
+        if: env.HAS_SA != 'true'
+        run: echo "::warning::Add the FIREBASE_SERVICE_ACCOUNT secret and FIREBASE_PROJECT_ID variable to deploy (see README)."
+
+      - uses: actions/checkout@v4
+        if: env.HAS_SA == 'true'
+
+      - name: Deploy site
+        if: env.HAS_SA == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live
