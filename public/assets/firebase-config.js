@@ -1,13 +1,14 @@
 /*
- * Paste your Firebase web app config here (Firebase console → Project settings → General → Your apps → Web app → Config).
+ * Firebase web app config for project cv-ats-aa50f
+ * (Firebase console → Project settings → General → Your apps → Web app → Config).
  * These values are safe to publish: access to the data is protected by firestore.rules, not by hiding this file.
- * While apiKey still starts with "YOUR_", the site runs in local mode (no sign in, data saved in the browser only).
  */
 export const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_PROJECT_ID.appspot.com',
-  messagingSenderId: 'YOUR_SENDER_ID',
-  appId: 'YOUR_APP_ID'
+  apiKey: 'AIzaSyB8PrEn64-bkE_0vlBbqPvd0DoFmTBiN5k',
+  authDomain: 'cv-ats-aa50f.firebaseapp.com',
+  projectId: 'cv-ats-aa50f',
+  storageBucket: 'cv-ats-aa50f.firebasestorage.app',
+  messagingSenderId: '248548922487',
+  appId: '1:248548922487:web:c4890c0d8198cb42d9a272',
+  measurementId: 'G-M9FCWEEEZ9'
 };
