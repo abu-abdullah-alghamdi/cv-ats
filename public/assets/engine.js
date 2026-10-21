@@ -7,7 +7,7 @@
     summary: 'SUMMARY', education: 'EDUCATION', skills: 'SKILLS', projects: 'PROJECTS',
     experience: 'EXPERIENCE', certs: 'CERTIFICATIONS', languages: 'LANGUAGES'
   };
-  const ORDER = ['summary', 'education', 'skills', 'projects', 'experience', 'certs', 'languages'];
+  const ORDER = ['summary', 'education', 'skills', 'projects', 'experience', 'certs', 'extras', 'languages'];
 
   function clean(s) {
     return String(s == null ? '' : s).replace(/\t/g, ' ').replace(/[​-‏‪-‮]/g, '');
@@ -16,14 +16,23 @@
   function lines(text) {
     return clean(text).split(/\r?\n/).map(l => l.trim().replace(/^[•●▪\-*]\s*/, '')).filter(Boolean);
   }
+  // "Label: text" -> bold label. Only short labels count, so a sentence that happens to contain a colon stays plain.
   function labelRuns(line) {
-    const m = line.match(/^([^:]{1,60}):\s*(.*)$/);
+    const m = line.match(/^([^:]{1,80}):\s*(.*)$/);
     if (m && !/https?$/i.test(m[1].trim())) {
-      if (!m[2]) return [{ t: m[1].trim() + ':', s: 'bold' }];
-      return [{ t: m[1].trim() + ':', s: 'bold' }, { t: ' ' + m[2] }];
+      const label = m[1].trim();
+      if (!m[2]) return [{ t: label + ':', s: 'bold' }];
+      if (label.length <= 45 && label.split(/\s+/).length <= 5 && !/[,;(]/.test(label)) return [{ t: label + ':', s: 'bold' }, { t: ' ' + m[2] }];
     }
     return [{ t: line }];
   }
+  // "Course name | 2024" -> text + date shown on the right like other dated lines
+  function splitTailDate(line) {
+    const m = String(line).match(/^(.*\S)\s*\|\s*((?:[A-Za-z]{3,9}\.?\s*)?(?:\d{1,2}\/)?(?:19|20)\d{2}(?:\s*[–—-]\s*(?:(?:[A-Za-z]{3,9}\.?\s*)?(?:\d{1,2}\/)?(?:19|20)\d{2}|present|current))?)\.?$/i);
+    return m && m[2].length <= 24 ? { text: m[1].replace(/[|,\s]+$/, ''), date: m[2].replace(/\s*[–—-]\s*/, ' – ') } : { text: line, date: '' };
+  }
+  const nameText = S => S.nameCase === 'asis' ? tr(S.name) : tr(S.name).toUpperCase();
+  const extraItems = S => (S.extras || []).filter(x => tr(x.title) || lines(x.content).length);
   function urlOf(v) {
     v = tr(v);
     if (!v) return '';
@@ -76,7 +85,7 @@
   const expItems = S => (S.experience || []).filter(e => tr(e.role) || tr(e.company));
   function isEmpty(S) {
     return !(tr(S.name) || tr(S.headline) || contactLines(S).length || lines(S.summary).length || eduItems(S).length ||
-      lines(S.skills).length || projItems(S).length || expItems(S).length || lines(S.certs).length || lines(S.languages).length);
+      lines(S.skills).length || projItems(S).length || expItems(S).length || lines(S.certs).length || lines(S.languages).length || extraItems(S).length);
   }
 
   /* ====================== layout for preview + PDF ====================== */
@@ -201,6 +210,15 @@
       });
       y += 1.5;
     }
+    function datedLine(line) {
+      const { text, date } = splitTailDate(line);
+      if (!date) { rich(labelRuns(line), { x: ML, w: CW, size: SZ.body }); return; }
+      const dw = measure(date, SZ.body, 'italic');
+      rich(labelRuns(text), {
+        x: ML, w: CW - dw - 14, size: SZ.body,
+        onFirst: base => ops().push({ k: 'text', x: PW - MR - dw, y: base, t: date, size: SZ.body, s: 'italic', c: INK })
+      });
+    }
     function details(text, format) {
       const ls = lines(text);
       if (!ls.length) return;
@@ -208,7 +226,7 @@
       else bullets(ls.map(labelRuns), SZ.body);
     }
 
-    if (tr(S.name)) rich([{ t: tr(S.name).toUpperCase(), s: 'bold' }], { x: ML, w: CW, size: SZ.name, align: 'center' });
+    if (tr(S.name)) rich([{ t: nameText(S), s: 'bold' }], { x: ML, w: CW, size: SZ.name, align: 'center' });
     y += 1;
     if (tr(S.headline)) rich([{ t: tr(S.headline), s: 'bold' }], { x: ML, w: CW, size: SZ.headline, align: 'center' });
     y += 1;
@@ -255,8 +273,15 @@
       }
       if (key === 'certs' && lines(S.certs).length) {
         heading(titleOf(S, key));
-        lines(S.certs).forEach(l => rich(labelRuns(l), { x: ML, w: CW, size: SZ.body }));
+        lines(S.certs).forEach(datedLine);
       }
+      if (key === 'extras') extraItems(S).forEach(x => {
+        heading(tr(x.title) || 'ADDITIONAL INFORMATION');
+        const ls = lines(x.content);
+        if (x.format === 'paragraph') rich([{ t: ls.join(' ') }], { x: ML, w: CW, size: SZ.body, align: 'justify' });
+        else if (x.format === 'bullets') bullets(ls.map(labelRuns), SZ.body);
+        else ls.forEach(datedLine);
+      });
       if (key === 'languages' && lines(S.languages).length) {
         heading(titleOf(S, key));
         lines(S.languages).forEach(l => rich(labelRuns(l), { x: ML, w: CW, size: SZ.body }));
@@ -309,7 +334,7 @@
     });
     const P = (opts) => new D.Paragraph(Object.assign({ spacing: { after: 20, line: 264 } }, opts));
     const out = [];
-    if (tr(S.name)) out.push(P({ alignment: D.AlignmentType.CENTER, spacing: { after: 30 }, children: runsToChildren([{ t: tr(S.name).toUpperCase(), s: 'bold' }], 14) }));
+    if (tr(S.name)) out.push(P({ alignment: D.AlignmentType.CENTER, spacing: { after: 30 }, children: runsToChildren([{ t: nameText(S), s: 'bold' }], 14) }));
     if (tr(S.headline)) out.push(P({ alignment: D.AlignmentType.CENTER, spacing: { after: 40 }, children: runsToChildren([{ t: tr(S.headline), s: 'bold' }], 12.5) }));
     contactLines(S).forEach(l => out.push(P({ alignment: D.AlignmentType.CENTER, spacing: { after: 10 }, children: runsToChildren(l, 10) })));
 
@@ -332,6 +357,14 @@
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       out.push(P({ keepNext: true, spacing: { before: 120, after: 20 }, children: [new D.ImageRun({ data: bytes, transformation: { width: Math.round(wPt * 4 / 3), height: Math.round(hPt * 4 / 3) } })] }));
     };
+    const datedPlain = line => {
+      const { text, date } = splitTailDate(line);
+      if (!date) { plain(labelRuns(line)); return; }
+      out.push(P({
+        tabStops: [{ type: D.TabStopType.RIGHT, position: CONTENT }],
+        children: runsToChildren(labelRuns(text), 10.5).concat([new D.TextRun({ children: [new D.Tab(), date], italics: true, font: FONT, size: half(10.5), color: '141414' })])
+      }));
+    };
     const details = (text, format) => {
       const ls = lines(text);
       if (!ls.length) return;
@@ -345,7 +378,14 @@
       if (key === 'skills' && lines(S.skills).length) { heading(titleOf(S, key)); lines(S.skills).forEach(l => bullet(labelRuns(l))); }
       if (key === 'projects' && projItems(S).length) { heading(titleOf(S, key)); projItems(S).forEach(p => { entry(titleRuns(p.title, '', p.link, p.linkText), tr(p.dates)); details(p.details, p.format); }); }
       if (key === 'experience' && expItems(S).length) { heading(titleOf(S, key)); expItems(S).forEach(e => { logo(e.logo); entry(expRuns(S, e), tr(e.dates)); details(e.details, e.format); }); }
-      if (key === 'certs' && lines(S.certs).length) { heading(titleOf(S, key)); lines(S.certs).forEach(l => plain(labelRuns(l))); }
+      if (key === 'certs' && lines(S.certs).length) { heading(titleOf(S, key)); lines(S.certs).forEach(datedPlain); }
+      if (key === 'extras') extraItems(S).forEach(x => {
+        heading(tr(x.title) || 'ADDITIONAL INFORMATION');
+        const ls = lines(x.content);
+        if (x.format === 'paragraph') plain([{ t: ls.join(' ') }], { alignment: D.AlignmentType.JUSTIFIED });
+        else if (x.format === 'bullets') ls.forEach(l => bullet(labelRuns(l)));
+        else ls.forEach(datedPlain);
+      });
       if (key === 'languages' && lines(S.languages).length) { heading(titleOf(S, key)); lines(S.languages).forEach(l => plain(labelRuns(l))); }
     });
 
